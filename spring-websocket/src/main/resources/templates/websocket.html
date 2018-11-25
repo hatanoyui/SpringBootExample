@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" charset="UTF-8" content="text/html; charset=UTF-8">
+    <title>Title</title>
+
+    <script src="../static/js/reconnect-socket.js" th:src="@{/js/reconnect-socket.js}" type="application/javascript"></script>
+    <style>
+        #send button, input{
+            height: 40px;
+        }
+        #textArea {
+            height: 400px;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="main">
+
+    <h1>Websocket</h1>
+    <div id="send"  >
+        <label>
+            <input id="valueToSend" width="100" height="38px" placeholder="请输入内容" style="height:38px; padding: unset; border-width: 1px;"/>
+        </label>
+        <button value="" onclick="send()">发送内容到服务器</button>
+    </div>
+    <div >
+        <textarea id="textArea"></textarea>
+    </div>
+
+</div>
+
+</body>
+<script type="application/javascript">
+    var socket = new ReconnectingWebSocket('ws://127.0.0.1:8080/ws');
+    socket.debug = true;
+    socket.timeoutInterval = 5400;
+    socket.automaticOpen = true;
+    socket.reconnectInterval = 3000;
+
+    function send() {
+        var text = document.getElementById("valueToSend");
+        if (text.value !== '') {
+            socket.send(text.value);
+            add(">>>" + text.value + "\n");
+        }
+    }
+
+    socket.addEventListener("message", function (event) {
+        add("<<<" + event.data + "\n");
+    });
+
+
+    function add(data) {
+        var textArea = document.getElementById("textArea");
+        textArea.value =  textArea.value + (data);
+    }
+
+</script>
+
+</html>
